@@ -46,6 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("sendMessage").addEventListener("click", () => {
     const userInput = document.getElementById("userInput").value;
     document.getElementById("userInput").value = ""; // Clear input field
+
+    //TODO: handle streaming
+    animateGif();
     sendRequest("/chat", { message: userInput }).then((data) => {
       const chatArea = document.getElementById("chatArea");
       chatArea.innerHTML += `<div>User: ${userInput}</div>`;
@@ -116,14 +119,25 @@ document.addEventListener("DOMContentLoaded", () => {
     newTrigger.classList.add("flex", "justify-between", "items-center", "mb-2");
 
     const textSpan = document.createElement("span");
-    textSpan.textContent = `▇  ${word} - ${value} - ${text.length > 50 ? text.substring(0, 50) + '...' : text}`;
-    textSpan.classList.add('flex-grow', 'pr-2'); // Add padding to the right
+    textSpan.textContent = `▇  ${word} - ${value} - ${
+      text.length > 50 ? text.substring(0, 50) + "..." : text
+    }`;
+    textSpan.classList.add("flex-grow", "pr-2"); // Add padding to the right
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.classList.add('bg-red-500', 'hover:bg-red-700', 'text-white', 'font-bold', 'py-1', 'px-2', 'text-xs', 'rounded');
-    deleteButton.onclick = function() {
-        triggerList.removeChild(newTrigger);
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.classList.add(
+      "bg-red-500",
+      "hover:bg-red-700",
+      "text-white",
+      "font-bold",
+      "py-1",
+      "px-2",
+      "text-xs",
+      "rounded"
+    );
+    deleteButton.onclick = function () {
+      triggerList.removeChild(newTrigger);
     };
 
     newTrigger.appendChild(textSpan);
@@ -136,4 +150,48 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("triggerText").value = "";
     triggerModal.classList.add("hidden"); // Hide modal after saving
   });
+
+  // Analysis
+  const ctx = document.getElementById("lineChart").getContext("2d");
+  const lineChart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: ["Label 1", "Label 2", "Label 3"], // Replace with your labels
+      datasets: [
+        {
+          label: "Metric 1",
+          data: [
+            /* data points */
+          ],
+          borderColor: "rgb(255, 99, 132)", // Line color
+          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+        },
+        // ... Repeat for each metric ...
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+      plugins: {
+        legend: {
+          position: "top",
+        },
+      },
+    },
+  });
+
+  // Face Gif lol
+  const gifElement = document.getElementById("animatedGif");
+  gifElement.src = "content/morshu-paused.gif";
+
+  function animateGif() {
+    gifElement.src = "content/morshu.gif";
+  }
+
+  function pauseGif() {
+    gifElement.src = "content/morshu-paused.gif";
+  }
 });
