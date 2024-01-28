@@ -205,43 +205,39 @@ document.addEventListener("DOMContentLoaded", () => {
         {
           label: "Familiarity",
           data: fam_data,
-          borderColor: "rgb(0,255,0)", // Line color
+          borderColor: "rgb(10,255,15)", // Line color
    
         },
         // aggression - red
         {
           label: "Aggression",
           data: aggr_data,
-          borderColor: "rgb(255,0,0)", // Line color
+          borderColor: "rgb(255,30,15)", // Line color
          
         },
         // manipulation - yellow
         {
           label: "Manipulation",
           data: manip_data,
-          borderColor: "rgb(255, 99, 132)", // Line color
-          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+          borderColor: "rgb(196, 180, 84)", // Line color
         },
         // humor - blue
         {
           label: "Humor",
           data: humor_data,
-          borderColor: "rgb(255, 99, 132)", // Line color
-          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+          borderColor: "rgb(0,40,255)", // Line color
         },
         // trust - purple
         {
           label: "Trust",
           data: trust_data,
-          borderColor: "rgb(255, 99, 132)", // Line color
-          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+          borderColor: "rgb(160,32,240)", // Line color
         },
         // respect - orange
         {
           label: "Respect",
           data: respect_data,
-          borderColor: "rgb(255, 99, 132)", // Line color
-          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+          borderColor: "rgb(255, 165, 15)", // Line color
         },
       ],
     },
