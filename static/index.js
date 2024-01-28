@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", () => {
   // Function to send AJAX request to Flask
   function sendRequest(url, data) {
@@ -9,6 +10,62 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify(data),
     }).then((response) => response.json());
   }
+
+  const socket = new WebSocket("ws://localhost:8000/chat");
+  fam_data = []
+  aggr_data = []
+  manip_data = []
+  humor_data = []
+  trust_data = []
+  respect_data = []
+
+  socket.addEventListener("message", function (event) {
+    console.log("Socket Message Received:", event);
+    body = JSON.parse(event.data);
+    
+    if (body["type"] == "analysis") {
+      metrics = body["metrics"]
+      triggers = body["triggers"]
+
+      // update metrics 
+      for (var key in metrics) {
+        document.getElementById(key).value = metrics[key]
+      }
+      
+      // update metrics chart
+      fam_data.push(metrics["familiarity"])
+      aggr_data.push(metrics["aggression"]) 
+      manip_data.push(metrics["manipulation"])
+      humor_data.push(metrics["humor"])
+      trust_data.push(metrics["trust"])
+      respect_data.push(metrics["respect"])
+
+
+      // TODO: triggers
+      // show triggered events on chart
+      // show triggered events in list
+    }
+    
+    // message received
+    else if ([body["type"] == "response"]) {
+      // TODO: Handle token-by-token streaming here
+      const chatArea = document.getElementById("chatArea");
+      chatArea.innerHTML += `<div>${body["token"]["text"]}</div>`;
+      pauseGif();
+    }
+  });
+
+  function sendMessage(message) {
+    socket.send(message);
+  }
+
+  // User sent-message
+  document.getElementById("sendMessage").addEventListener("click", () => {
+    const userInput = document.getElementById("userInput");
+    sendMessage(userInput.value);
+    userInput.value = "";
+    animateGif();
+  })
 
   // Handle Global Knowledge Text Input
   document.getElementById("uploadGlobalText").addEventListener("click", () => {
@@ -40,20 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
     sendRequest("/enhance-text", { type: "global", text: text }).then((data) =>
       console.log(data)
     ); //TODO: show to user to decide if they want to add
-  });
-
-  // Handle Chatbot Message Send
-  document.getElementById("sendMessage").addEventListener("click", () => {
-    const userInput = document.getElementById("userInput").value;
-    document.getElementById("userInput").value = ""; // Clear input field
-
-    //TODO: handle streaming
-    animateGif();
-    sendRequest("/chat", { message: userInput }).then((data) => {
-      const chatArea = document.getElementById("chatArea");
-      chatArea.innerHTML += `<div>User: ${userInput}</div>`;
-      chatArea.innerHTML += `<div>Bot: ${data.response}</div>`;
-    });
   });
 
   // Setup - Analysis mode switching
@@ -156,17 +199,50 @@ document.addEventListener("DOMContentLoaded", () => {
   const lineChart = new Chart(ctx, {
     type: "line",
     data: {
-      labels: ["Label 1", "Label 2", "Label 3"], // Replace with your labels
+      labels: ["Familiarity", "Aggression", "Manipulation", "Humor", "Trust", "Respect"], // Replace with your labels
       datasets: [
+        // familiarity - green
         {
-          label: "Metric 1",
-          data: [
-            /* data points */
-          ],
+          label: "Familiarity",
+          data: fam_data,
+          borderColor: "rgb(0,255,0)", // Line color
+   
+        },
+        // aggression - red
+        {
+          label: "Aggression",
+          data: aggr_data,
+          borderColor: "rgb(255,0,0)", // Line color
+         
+        },
+        // manipulation - yellow
+        {
+          label: "Manipulation",
+          data: manip_data,
           borderColor: "rgb(255, 99, 132)", // Line color
           backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
         },
-        // ... Repeat for each metric ...
+        // humor - blue
+        {
+          label: "Humor",
+          data: humor_data,
+          borderColor: "rgb(255, 99, 132)", // Line color
+          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+        },
+        // trust - purple
+        {
+          label: "Trust",
+          data: trust_data,
+          borderColor: "rgb(255, 99, 132)", // Line color
+          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+        },
+        // respect - orange
+        {
+          label: "Respect",
+          data: respect_data,
+          borderColor: "rgb(255, 99, 132)", // Line color
+          backgroundColor: "rgba(255, 99, 132, 0.5)", // Fill color
+        },
       ],
     },
     options: {
@@ -177,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       plugins: {
         legend: {
-          position: "top",
+          position: "bottom",
         },
       },
     },

@@ -1,18 +1,17 @@
 from fastapi import FastAPI, WebSocket
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic_settings import BaseSettings
 import chatbot
 import knowledge
-import os
+import analysis
 
 # init app
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],
+    allow_origins=["http://localhost:8080", "ws://localhost:8000/ws"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,6 +19,28 @@ app.add_middleware(
 
 # init vectorstore
 knowledge.init()
+
+
+
+# websocket endpoint
+@app.websocket("/chat")
+async def chat(websocket: WebSocket):
+    await websocket.accept()
+
+    while True:
+        # frontend request (user prompt)
+        prompt = await websocket.receive_text()
+
+        # analyze prompt, return metrics and trigger events if necessary
+        new_metrics, triggers = analysis.analyze_prompt(prompt)
+        await websocket.send_json({"type": "analysis", "metrics": new_metrics, "triggers": triggers})
+
+        # send npc response stream
+        response = chatbot.get_response(prompt)
+        for token in response:
+            await websocket.send_json({"type": "response", "token": token})
+        
+        # await websocket.send_text(StreamingResponse(chatbot.stream_response(prompt)))
 
 # Mount the static directory
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
@@ -44,19 +65,17 @@ class ConvoTrigger(BaseModel):
     threshold: int # threshold for metric to be triggered
     prompt: str # prompt to pass on to npc when triggered
 
+# class AnalysisResponse(BaseModel):
+#     metrics: dict # metrics object
+#     triggers: list # list of triggered events
+
 class SetupDataModel(BaseModel):
     pass
 
 class ConversationDataModel(BaseModel):
     pass
 
-@app.post("/chat")
-async def chat(chat_request: ChatRequest):
-    #TODO: analyze request
-    response = chatbot.get_response(chat_request.message)
-    return {"response": response}
-    #TODO: analyze response
-    #TODO: stream response
+
 
 @app.post("/add-trigger")
 async def add_trigger(convo_trigger: ConvoTrigger):
@@ -80,9 +99,3 @@ async def enhance_text(enhance_text_request: EnhanceTextRequest):
 async def setup_events(setup_data: SetupDataModel):
     # Process and store setup data
     return {"status": "success"}
-
-# ?
-@app.post("/analyze-conversation")
-async def analyze_conversation(conversation_data: ConversationDataModel):
-    # Real-time analysis logic
-    return {"analysis": "Some analysis data"}

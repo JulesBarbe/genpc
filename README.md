@@ -1,6 +1,7 @@
 # Dependencies:
 OpenAI with API key
 Langchain
-!vector databse
-FastAPI, uvicorn
+FastAPI, uvicorn 
 aiofiles 
+qdrant-client (async vectorstore)
+pydantic-settings
