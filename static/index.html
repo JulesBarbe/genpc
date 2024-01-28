@@ -1,3 +1,9 @@
+<style>
+  .textarea-placeholder::placeholder {
+      padding-left: 50px; /* Adjust placeholder position */
+  }
+</style>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,7 +29,7 @@
         <!-- Global Knowledge Section -->
         <div class="bg-white p-4 mb-4">
           <h2 class="font-bold text-lg mb-2">Global Knowledge</h2>
-          <div id="globalKnowledgeText" class="h-32 overflow-auto mb-4 bg-gray-200 p-2"></div>
+          <div id="globalKnowledgeText" class="h-32 overflow-auto mb-4 bg-gray-100 p-2"></div>
           <button id="uploadGlobalText"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Input Text</button>
           <button id="enhanceGlobalText"
@@ -33,7 +39,7 @@
         <!-- Local Knowledge Section -->
         <div class="bg-white p-4">
           <h2 class="font-bold text-lg mb-2">Local Knowledge</h2>
-          <div id="localKnowledgeText" class="h-32 overflow-auto mb-4 bg-gray-200 p-2"></div>
+          <div id="localKnowledgeText" class="h-32 overflow-auto mb-4 bg-gray-100 p-2"></div>
           <button id="uploadLocalText"
             class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Input Text</button>
           <button id="enhanceLocalText"
@@ -45,23 +51,66 @@
       <div class="w-2/3 p-2 flex flex-col">
 
         <!-- Dynamic Header -->
-        <div class="bg-white p-4 mb-4 text-cxenter font-bold uppercase">
+        <div class="bg-white p-4 mb-4 text-center font-bold uppercase">
           Dynamic
         </div>
 
         <!-- Analysis Section -->
-        <div class="analysis-section bg-white p-4">
-          <h2 class="font-bold text-lg mb-2">Analysis Section</h2>
-          <button id="toggleMode" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Toggle
+        <div class="analysis-section bg-white p-4 relative">
+          <button id="toggleMode"
+            class="absolute top-5 right-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Toggle
             Mode</button>
 
           <!-- Setup Mode Content -->
-          <div id="setupMode" class="hidden">
-            <!-- Add UI components for setting up events -->
+          <div id="setupMode">
+            <h2 class="font-bold text-lg mb-2">Setup</h2>
+
+            <!-- Conversation metrics original values -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>Familiarity<span class="mr-4"></span><input type="number" class="setup-input w-16 bg-gray-100" min="0" max="10" value="0"></div>
+              <div>Agressivity <span class="mr-4"></span><input type="number" class="setup-input w-16 bg-gray-100" min="0" max="10" value="0"></div>
+              <div>Manipulation <span class="mr-4"></span><input type="number" class="setup-input w-16 bg-gray-100" min="0" max="10" value="0"></div>
+              <div>Humor <span class="mr-4"></span><input type="number" class="setup-input w-16 bg-gray-100" min="0" max="10" value="0"></div>
+              <div>Fear <span class="mr-4"></span><input type="number" class="setup-input w-16 bg-gray-100" min="0" max="10" value="0"></div>
+              <div>GIRL BOSS <span class="mr-4"></span><input type="number" class="setup-input w-16 bg-gray-100" min="0" max="10" value="0"></div>
+            </div>
+
+            <!-- Converation metric triggers -->
+            <!-- Triggers Section -->
+            <div class="triggers-section mt-4">
+              <button id="addTrigger"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-2">Add Trigger</button>
+              <ul id="triggerList" class="list-disc pl-5">
+                <!-- Trigger items will be added here -->
+              </ul>
+            </div>
+
+            <!-- Popup Modal for Adding Trigger -->
+            <div id="triggerModal"
+              class="hidden fixed inset-0 bg-gray-200 bg-opacity-75 flex items-center justify-center">
+              <div class="bg-white p-6 rounded-lg trigger-modal-content w-1/2">
+                <div class="flex items-center mb-4">
+                  <select id="triggerWord" class="mr-4">
+                    <option>Familiarity</option>
+                    <option>Agressivity</option>
+                    <option>Manipulation</option>
+                    <option>Humor</option>
+                    <option>Fear</option>
+                    <option>GIRL BOSS</option>
+                  </select>
+                  <input class="bg-gray-100" type="number" id="triggerValue" min="0" max="10" class="w-16 mr-4">
+                </div>
+                <textarea type="text" id="triggerText" class="w-full h-24 mb-4" placeholder="Event triggered here"></textarea>
+                <button id="saveTrigger"
+                  class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Save</button>
+              </div>
+            </div>
+
           </div>
 
           <!-- Analysis Mode Content -->
           <div id="analysisMode" class="hidden">
+            <h2 class="font-bold text-lg mb-2">Analysis</h2>
             <!-- Add UI components for displaying analysis -->
           </div>
         </div>
@@ -70,11 +119,11 @@
         <!-- Chatbot Section -->
         <div class="bg-white p-4">
           <h2 class="font-bold text-lg mb-2">Chatbot</h2>
-          <div id="chatArea" class="h-64 overflow-auto mb-4 bg-gray-200 p-2"></div>
+          <div id="chatArea" class="h-64 overflow-auto mb-4 bg-gray-100 p-2"></div>
           <input type="text" id="userInput" class="border border-gray-300 p-2 w-full mb-2"
             placeholder="Type your message...">
-          <button id="sendMessage"
-            class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Send</button>
+          <button id="sendMessage" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            disabled>Send</button>
         </div>
       </div>
     </div>
